@@ -1,0 +1,23 @@
+language_question:
+    en: "Chose your language\n Write *en/ru* or */exit*"
+    ru: "Выберете ваш язык\n Напишите *en/ru* или */exit*"
+language_changed:
+    en: "Changed your language to *english*\n Enjoy"
+    ru: "Поменял ваш язык на *русский*\n Наслаждайтесь"
+
+welcome_text:
+    en: "Hi"
+    ru: "Привет"
+
+default_response:
+    en: "Don't know this command, sorry 😞"
+    ru: "Не знаю такую команду, сорян 😞"
+task_name:
+    en: "Write reminder/task's name or */exit*"
+    ru: "Напишите название задачи/напоминания или */exit*"
+task_date:
+    en: "Write reminder/task's date or */exit*\n**example**:12.04.12, today"
+    ru: "Напишите дату задачи/напоминания или */exit*\n**пример**:12.04.12, сегодня"
+task_time:
+    en: "Write reminder/task's time or */exit*\n**example**:17:20, 5:20pm"
+    ru: "Напишите время задачи/напоминания или */exit*\n**пример**:17:20, 5:20pm"

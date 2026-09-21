@@ -1,11 +1,13 @@
 class Task:
-    def __init__(self, task_id, text, start_time, picture=None, reminds=1, end_time=None):
+    def __init__(self, task_id, text="", start_time="", repeat=False, picture=None, reminds=1, location=None, is_active=False):
         self.task_id = task_id
         self.reminds = reminds
         self.picture = picture
+        self.repeat = repeat
         self.text = text
         self.start_time = start_time
-        self.end_time = end_time if end_time is not None else start_time
+        self.is_active = is_active
+        self.location = location
 
     def to_dict(self):
         return {
@@ -14,5 +16,5 @@ class Task:
             'picture': self.picture,
             'text': self.text,
             'start_time': self.start_time,
-            'end_time': self.end_time
+            'location': self.location
         }

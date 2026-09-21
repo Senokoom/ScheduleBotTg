@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import os
 from requests import post, get
 
-class TelegramBot:
+class TelegramAPIBot:
     def __init__(self, TOKEN):
         self.main_url = f"https://api.telegram.org/bot{TOKEN}/"
 
@@ -23,7 +23,8 @@ class TelegramBot:
     def send_text_message_to_user_by_id(self, message_text, user_id):
         parameters = {
             "text": message_text,
-            "chat_id": user_id
+            "chat_id": user_id,
+            "parse_mode": "MarkdownV2"
         }
         return post(f"{self.main_url}sendMessage", params=parameters)
 
@@ -34,11 +35,7 @@ class TelegramBot:
             "caption": caption
         }
         return post(f"{self.main_url}sendPhoto", params=parameters)
-
-load_dotenv()
-TOKEN = os.getenv('TOKEN')
-tg_bot = TelegramBot(TOKEN)
-print(tg_bot.getMe())
-# print(json.dumps(tg_bot.get_messages(), indent=4))
-print(json.dumps(tg_bot.get_last_message_from_user_by_id(994917029)))
-print(tg_bot.send_text_message_to_user_by_id("hello world", 994917029))
+# print(tg_bot.getMe())
+# # print(json.dumps(tg_bot.get_messages(), indent=4))
+# print(json.dumps(tg_bot.get_last_message_from_user_by_id(994917029)))
+# print(tg_bot.send_text_message_to_user_by_id("hello world", 994917029))
