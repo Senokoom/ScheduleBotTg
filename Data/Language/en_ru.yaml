@@ -4,11 +4,33 @@ language_question:
 language_changed:
     en: "Changed your language to *english*\n Enjoy"
     ru: "Поменял ваш язык на *русский*\n Наслаждайтесь"
-
 welcome_text:
-    en: "Hi"
-    ru: "Привет"
-
+    en: |
+        👋 *Hello*
+        
+        I'm your schedule bot\. Here's what I can do:
+        
+        /start \- Start the bot
+        /language \- Change language
+        /create \- Create a new task
+        /tasks \- Show all your tasks
+        /delete \- Delete a task
+        /cat \- Get a random cat picture 🐱
+        
+        Send me a location to get the address
+    ru: |
+        👋 *Привет*
+        
+        Я ваш бот\-планировщик\. Вот что я умею:
+        
+        /start \- Запустить бота
+        /language \- Сменить язык
+        /create \- Создать новую задачу
+        /tasks \- Показать все задачи
+        /delete \- Удалить задачу
+        /cat \- Получить случайного котика 🐱
+        
+        Отправьте мне геолокацию, чтобы получить адрес
 default_response:
     en: "Don't know this command, sorry 😞"
     ru: "Не знаю такую команду, сорян 😞"
@@ -16,8 +38,38 @@ task_name:
     en: "Write reminder/task's name or */exit*"
     ru: "Напишите название задачи/напоминания или */exit*"
 task_date:
-    en: "Write reminder/task's date or */exit*\n**example**:12.04.12, today"
-    ru: "Напишите дату задачи/напоминания или */exit*\n**пример**:12.04.12, сегодня"
+    en: "Write reminder/task's date or */exit*\n_format dd/mm/yy or today_"
+    ru: "Напишите дату задачи/напоминания или */exit* \n_в формате дд/мм/гг или сегодня_"
 task_time:
-    en: "Write reminder/task's time or */exit*\n**example**:17:20, 5:20pm"
-    ru: "Напишите время задачи/напоминания или */exit*\n**пример**:17:20, 5:20pm"
+    en: "Write reminder/task's time or */exit*\n_format mm/hh, HHam_"
+    ru: "Напишите время задачи/напоминания или */exit*\n_формат мм/чч или 2 часа дня_"
+task_show:
+    en: "All of your's reminders"
+    ru: "Все ваши напоминания"
+task_show_date:
+    en: "Date:"
+    ru: "Дата:"
+task_show_time:
+    en: "Time:"
+    ru: "Время:"
+no_tasks:
+    en: "You have no tasks/reminders yet"
+    ru: "У вас пока нет напоминаний"
+delete_task:
+    en: "Send the ID of the task you want to delete or */exit*"
+    ru: "Отправьте ID задачи, которую хотите удалить, или */exit*"
+task_deleted:
+    en: "Task deleted successfully"
+    ru: "Задача успешно удалена"
+task_not_found:
+    en: "Task with this ID not found"
+    ru: "Задача с таким ID не найдена"
+reminder_text:
+    en: "⏰ Reminder *{task_text}*"
+    ru: "⏰ Напоминание *{task_text}*"
+location_received:
+    en: "📍 Location received\n*Address:* {address}"
+    ru: "📍 Местоположение получено\n*Адрес:* {address}"
+location_error:
+    en: "Failed to get address from this location"
+    ru: "Не удалось получить адрес по этому местоположению"

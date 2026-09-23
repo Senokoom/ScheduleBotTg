@@ -22,9 +22,16 @@ class Schedule:
             i += 1
         return i
 
+    def get_task_by_id(self, task_id):
+        for task in self.tasks:
+            if str(task.task_id) == str(task_id):
+                return task
+        return None
 
-    def create_task(self, taskid, text="", start_time="",  end_time=None, reminds=1, picture=None):
-        self.tasks.append(Task(task_id=taskid, text=text, start_time=start_time, end_time=end_time, reminds=reminds, picture=picture))
+
+
+    def create_task(self, taskid, text="", start_time="", date=None, reminds=1, picture=None, location=None):
+        self.tasks.append(Task(task_id=taskid, text=text, date=date, start_time=start_time, reminds=reminds, picture=picture, location=location))
 
     def get_all_tasks(self):
         return self.tasks
