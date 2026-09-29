@@ -10,7 +10,7 @@ class Schedule:
         user_id = schedule_dict["user_id"]
         _tasks = []
         for task in schedule_dict["tasks"]:
-            _tasks.append(Task(**task))
+            _tasks.append(Task.from_dict(task))
         result = cls(user_id)
         result.tasks = _tasks
         return result

@@ -1,12 +1,7 @@
 from Data.DataManager import DataManager
-from Data.Language.PhraseGiver import PhraseGiver
 from Data.Schedule.Schedule import Schedule
 from Data.User import User
 from Telegramapi.TelegramAPIBot import TelegramAPIBot
-import json
-from dotenv import load_dotenv
-import os
-import pathlib
 import dateparser
 
 class ScheduleTgBot:
@@ -201,11 +196,11 @@ class ScheduleTgBot:
 
             # Безопасно форматируем дату
             if task.date and hasattr(task.date, 'strftime'):
-                date_str = task.date.strftime("%d.%m.%Y")
+                date_str = task.date.strftime("%d/%m/%Y")
             else:
                 date_str = "не указана"
 
-            final_str += f"{task.task_id}. {task.text}\n   {self.phrases.text_dict['task_show_time'][user.language]} {time_str} | {self.phrases.text_dict['task_show_date'][user.language]} {date_str}\n"
+            final_str += f"{task.task_id} {task.text}\n   {self.phrases.text_dict['task_show_time'][user.language]} {time_str}  {self.phrases.text_dict['task_show_date'][user.language]} {date_str}\n"
 
         self.telegram_bot.send_text_message_to_user_by_id(final_str, user.user_id)
 
@@ -222,18 +217,16 @@ class ScheduleTgBot:
                 user.user_id
             )
 
-
     def check_reminders(self):
         from datetime import datetime
 
         now = datetime.now()
+        # print(f"[REMINDERS] Проверка в {now}")
 
-        # Проходим по всем расписаниям в ОП
         for schedule_dict in self.data_manager.schedule_data:
             schedule = Schedule.create_from_dict(schedule_dict)
             user_id = schedule.user_id
 
-            # Получаем язык пользователя
             user_data = self.data_manager.get_user_data_by_id(user_id)
             if not user_data:
                 continue
@@ -242,46 +235,70 @@ class ScheduleTgBot:
             updated = False
 
             for task in schedule.tasks:
-                # Пропускаем неактивные задачи
+                # print(f"[REMINDERS] Задача {task.task_id}:")
+                # print(f"  is_active: {task.is_active} (type: {type(task.is_active)})")
+                # print(f"  date: {task.date} (type: {type(task.date)})")
+                # print(f"  start_time: {task.start_time} (type: {type(task.start_time)})")
+
                 if not task.is_active:
+                    # print("  -> Пропуск: неактивна")
                     continue
 
-                # Пропускаем задачи без даты или времени
-                if not task.date or not task.start_time:
+                if not task.start_time:
+                    # print("  -> Пропуск: нет времени")
                     continue
 
                 try:
-                    # Извлекаем date и time для сравнения
-                    if hasattr(task.date, 'date'):
-                        task_date = task.date.date()
-                    else:
-                        continue
-
                     if hasattr(task.start_time, 'hour'):
                         task_time = task.start_time
                     else:
+                        # print(f"  -> Пропуск: start_time не time объект: {type(task.start_time)}")
                         continue
 
-                    # Объединяем дату и время в один datetime
-                    task_datetime = datetime.combine(task_date, task_time)
+                    if task.date:
+                        if hasattr(task.date, 'date'):
+                            task_date = task.date.date()
+                        elif hasattr(task.date, 'year'):
+                            task_date = task.date
+                        else:
+                            # print(f"  -> Пропуск: date не date объект: {type(task.date)}")
+                            continue
 
-                    # Если текущее время >= времени задачи
-                    if now >= task_datetime:
-                        # Отправляем напоминание
-                        reminder_text = self.phrases.text_dict["reminder_text"][user.language].format(
-                            task_text=task.text
-                        )
-                        self.telegram_bot.send_text_message_to_user_by_id(reminder_text, user_id)
+                        task_datetime = datetime.combine(task_date, task_time)
+                        # print(f"  -> task_datetime: {task_datetime}")
+                        # print(f"  -> now >= task_datetime: {now >= task_datetime}")
 
-                        # Помечаем задачу как неактивную, чтобы не спамить
-                        task.is_active = False
-                        updated = True
+                        if now >= task_datetime:
+                            reminder_text = self.phrases.text_dict["reminder_text"][user.language].format(
+                                task_text=task.text
+                            )
+                            self.telegram_bot.send_text_message_to_user_by_id(reminder_text, user_id)
+                            # print(f"  -> Напоминание отправлено!")
+
+                            task.is_active = False
+                            updated = True
+
+                    else:
+                        # Ежедневное напоминание
+                        if now.hour == task_time.hour and now.minute == task_time.minute:
+                            last_remind_key = f"last_remind_{task.task_id}"
+                            today_str = now.strftime("%Y-%m-%d")
+
+                            if not hasattr(self, '_last_remind_dates'):
+                                self._last_remind_dates = {}
+
+                            if self._last_remind_dates.get(last_remind_key) != today_str:
+                                reminder_text = self.phrases.text_dict["reminder_text"][user.language].format(
+                                    task_text=task.text
+                                )
+                                self.telegram_bot.send_text_message_to_user_by_id(reminder_text, user_id)
+                                self._last_remind_dates[last_remind_key] = today_str
+                                # print(f"  -> Ежедневное напоминание отправлено!")
 
                 except Exception as e:
-                    print(f"Ошибка проверки задачи {task.task_id} пользователя {user_id}: {e}")
+                    print(f"  -> ОШИБКА: {e}")
                     continue
 
-            # Если что-то изменилось, обновляем расписание в ОП
             if updated:
                 self.data_manager.update_schedule_data_by_id(schedule.to_dict(), user_id)
 
@@ -306,15 +323,15 @@ class ScheduleTgBot:
                 time_str = "--:--"
 
             if task.date and hasattr(task.date, 'strftime'):
-                date_str = task.date.strftime("%d.%m.%Y")
+                date_str = task.date.strftime("%d/%m/%Y")  # <-- Заменил точки на слеши
             else:
                 date_str = "не указана"
 
-            final_str += f"{task.task_id}. {task.text}\n   {self.phrases.text_dict['task_show_time'][user.language]} {time_str} | {self.phrases.text_dict['task_show_date'][user.language]} {date_str}\n"
+            final_str += f"ID {task.task_id} {task.text}\n   {self.phrases.text_dict['task_show_time'][user.language]} {time_str}  {self.phrases.text_dict['task_show_date'][user.language]} {date_str}\n"
 
         final_str += "\n" + self.phrases.text_dict["delete_task"][user.language]
-
-        self.telegram_bot.send_text_message_to_user_by_id(final_str, user.user_id)
+        print(final_str)
+        print(self.telegram_bot.send_text_message_to_user_by_id(final_str, user.user_id).json())
         user.state = "waiting_for_delete_id"
         self.data_manager.update_user_data(user.to_list())
 
@@ -389,6 +406,7 @@ class ScheduleTgBot:
                 user.current_task_id = None
                 self.data_manager.update_schedule_data_by_id(schedule.to_dict(), user.user_id)
                 self.data_manager.update_user_data(user.to_list())
+                self.start(user)
                 return
         self.task_time(user)
 
@@ -410,6 +428,7 @@ class ScheduleTgBot:
                 return
             date = dateparser.parse(msg["text"])
             if date:
+                date = date.date()
                 schedule = self.create_or_get_schedule(user)
                 # print(f"ВОТ ЭТО СКЕДУЛЕ В ДАТЕ {schedule.to_dict()}")
                 # print(f"ЭТО ЮЗЕР В ДАТЕ {user.to_list()}")

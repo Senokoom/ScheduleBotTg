@@ -89,6 +89,7 @@ class DataManager:
             writer.writerows(self.user_data)
 
     def update_rom_schedule_data(self):
+        print(f"UPDATING SCHEDULE: {self.schedule_data}")
         with open(self.schedule_data_path, mode="w", encoding='utf-8') as yamlfile:
             yaml.safe_dump(self.schedule_data, yamlfile, allow_unicode=True, default_flow_style=False)
 

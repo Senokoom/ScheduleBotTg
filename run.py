@@ -12,8 +12,8 @@ load_dotenv()
 
 # Получаем настройки из .env
 TOKEN = os.getenv('TOKEN')
-ADMIN_ID = int(os.getenv('ADMIN_ID', '123456789'))  # Замени на свой ID
-GREETING_USERS = [int(uid) for uid in os.getenv('GREETING_USERS', '').split(',') if uid]
+ADMIN_ID = int(os.getenv('ADMIN_ID'))  # Замени на свой ID
+GREETING_USERS = [int(uid) for uid in os.getenv('GREETING_USERS').split(',') if uid]
 
 # Определяем пути
 project_data_dir = pathlib.Path(__file__).resolve().parent
